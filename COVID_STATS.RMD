@@ -1,0 +1,71 @@
+---
+title: "WI COVID-19 STATS"
+author: "Michael J Zenz"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+```{r process, echo=FALSE, message=FALSE, warning=FALSE}
+source("WI_COVID_DATA_PROCESS.R")
+```
+
+# Positive Cases in 6 largest Counties
+
+```{r Largest_Counties_TOTAL, echo=FALSE, warning=FALSE}
+
+
+TOP_6_COUNTIES_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, POSITIVE))
+TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "Positive Cases (Log Scale)")
+```
+
+
+&nbsp;
+
+
+```{r Largest_Counties_PER, echo=FALSE, warning=FALSE}
+TOP_6_COUNTIES_POSITIVE_PER_THOUS <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, COUNTY_POSITIVE_PER_THOUS))
+
+TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "Positive Cases per 1000 People")
+```
+
+&nbsp;
+
+
+```{r Largest_Counties_PERCENT, echo=FALSE, warning=FALSE}
+TOP_6_COUNTIES_PERCENT_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, PERCENT_POS))
+TOP_6_COUNTIES_PERCENT_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title = "Prop. Positive Tests") + ylim(0,.25)
+
+```
+
+&nbsp;
+
+# Positive Cases By Region 
+[See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
+
+```{r REGION_TOTAL, echo=FALSE, warning=FALSE}
+
+
+REGION_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
+REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "Positive Cases (Log Scale)")
+```
+
+
+&nbsp;
+
+
+```{r REGION_PER, echo=FALSE, warning=FALSE}
+REGION_POSITIVE_PER_THOUS <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
+
+REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Positive Cases per 1000 People")
+```
+
+
+
+
+

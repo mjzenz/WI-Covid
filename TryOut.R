@@ -32,7 +32,7 @@ COUNTY_VALUES$COUNTY_POSITIVE_PER_THOUS <- COUNTY_VALUES$POSITIVE / (COUNTY_VALU
 
 COUNTY_VALUES_TOP_6_COUNTIES <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY %in% 
                                                       c("MILWAUKEE", "DANE", 
-                                                        "WAEKESHA", "BROWN", "RACINE", "OUTAGAMIE")),]
+                                                        "WAUKESHA", "BROWN", "RACINE", "OUTAGAMIE")),]
 
 
 
