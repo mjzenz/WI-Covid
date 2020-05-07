@@ -15,6 +15,50 @@ knitr::opts_chunk$set(echo = FALSE)
 source("WI_COVID_DATA_PROCESS.R")
 ```
 
+
+# Positive Cases By Region 
+[See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
+
+
+```{r NEW_TOTAL_REGION, echo=FALSE, warning=FALSE}
+
+
+REGION_NEW_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, CHANGE_POS))
+REGION_VALUES_POSITIVE + geom_bar()
+REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack") + labs(y = "", title  = "New Positive Cases")
+```
+
+
+&nbsp;
+
+
+
+
+
+
+
+```{r REGION_TOTAL, echo=FALSE, warning=FALSE}
+
+
+REGION_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
+REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "Positive Cases (Log Scale)")
+```
+
+
+&nbsp;
+
+
+```{r REGION_PER, echo=FALSE, warning=FALSE}
+REGION_POSITIVE_PER_THOUS <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
+
+REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Positive Cases per 1000 People")
+```
+
+
+&nbsp;
+
+
+
 # Positive Cases in 6 largest Counties
 
 ```{r Largest_Counties_TOTAL, echo=FALSE, warning=FALSE}
@@ -41,28 +85,6 @@ TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY
 TOP_6_COUNTIES_PERCENT_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, PERCENT_POS))
 TOP_6_COUNTIES_PERCENT_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title = "Prop. Positive Tests") + ylim(0,.25)
 
-```
-
-&nbsp;
-
-# Positive Cases By Region 
-[See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
-
-```{r REGION_TOTAL, echo=FALSE, warning=FALSE}
-
-
-REGION_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
-REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "Positive Cases (Log Scale)")
-```
-
-
-&nbsp;
-
-
-```{r REGION_PER, echo=FALSE, warning=FALSE}
-REGION_POSITIVE_PER_THOUS <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
-
-REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Positive Cases per 1000 People")
 ```
 
 
