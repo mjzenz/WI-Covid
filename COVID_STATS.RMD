@@ -16,16 +16,19 @@ source("WI_COVID_DATA_PROCESS.R")
 ```
 
 
-# Positive Cases By Region 
+This document contains confirmed COVID-19 cases as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
+
+
+
+# Positive Cases by Region 
 [See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
 
 
 ```{r NEW_TOTAL_REGION, echo=FALSE, warning=FALSE}
 
 
-REGION_NEW_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, CHANGE_POS))
-REGION_VALUES_POSITIVE + geom_bar()
-REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack") + labs(y = "", title  = "New Positive Cases")
+REGION_NEW_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(fill = REGION, x = Date, y = CHANGE_POS))
+REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + labs(y = "", title  = "New COVID-19 Cases")
 ```
 
 
@@ -34,14 +37,11 @@ REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack") + labs(y = "", title  
 
 
 
-
-
-
 ```{r REGION_TOTAL, echo=FALSE, warning=FALSE}
 
 
 REGION_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
-REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "Positive Cases (Log Scale)")
+REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "COVID-19 Cases (Log Scale)")
 ```
 
 
@@ -51,7 +51,7 @@ REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_
 ```{r REGION_PER, echo=FALSE, warning=FALSE}
 REGION_POSITIVE_PER_THOUS <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
 
-REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Positive Cases per 1000 People")
+REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "COVID-19 Cases per 1000 People")
 ```
 
 
@@ -59,13 +59,13 @@ REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  la
 
 
 
-# Positive Cases in 6 largest Counties
+# Positive Cases in 6 Most Populous Counties
 
 ```{r Largest_Counties_TOTAL, echo=FALSE, warning=FALSE}
 
 
 TOP_6_COUNTIES_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, POSITIVE))
-TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "Positive Cases (Log Scale)")
+TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "COVID-19 Cases (Log Scale)")
 ```
 
 
@@ -75,7 +75,7 @@ TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale
 ```{r Largest_Counties_PER, echo=FALSE, warning=FALSE}
 TOP_6_COUNTIES_POSITIVE_PER_THOUS <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, COUNTY_POSITIVE_PER_THOUS))
 
-TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "Positive Cases per 1000 People")
+TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "COVID-19 Cases per 1000 People")
 ```
 
 &nbsp;
