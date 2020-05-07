@@ -15,9 +15,10 @@ library(lubridate)
 DATA_REQUEST <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson")
 WI_COVID_DATA <-  fromJSON(rawToChar(DATA_REQUEST$content))
 WI_COVID_DATA <- WI_COVID_DATA[[c(4,2)]]
-WI_COVID_DATA <- WI_COVID_DATA[,2:7]
-WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$LoadDttm/1000)
-WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$Date)
+WI_COVID_DATA <- WI_COVID_DATA[,1:7]
+#LoadDttm changed in the data, so I removed this line.
+#WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$LoadDttm/1000)
+WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$LoadDttm)
 
 
 WI_POP <- read_csv("WI_POP.csv")
