@@ -1,5 +1,5 @@
 ---
-title: "WI COVID-19 STATS"
+title: "WI Covid-19 Stats"
 output: html_document
 ---
 
@@ -14,7 +14,7 @@ source("WI_COVID_DATA_PROCESS.R")
 ```
 
 
-This document contains confirmed COVID-19 cases as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
+This document contains confirmed Covid-19 cases as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
 
 # {.tabset}
 
@@ -26,7 +26,7 @@ This document contains confirmed COVID-19 cases as of `r format(MAX_DATE, format
 
 
 REGION_NEW_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(fill = REGION, x = Date, y = CHANGE_POS))
-REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + labs(y = "", title  = "New COVID-19 Cases")
+REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + labs(y = "", title  = "New Covid-19 Cases")
 ```
 
 
@@ -39,7 +39,7 @@ REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + l
 
 
 REGION_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
-REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "COVID-19 Cases (Log Scale)")
+REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "Covid-19 Cases (Log Scale)")
 ```
 
 
@@ -49,7 +49,7 @@ REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_
 ```{r REGION_PER, echo=FALSE, warning=FALSE}
 REGION_POSITIVE_PER_THOUS <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
 
-REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "COVID-19 Cases per 1000 People")
+REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Covid-19 Cases per 1000 People")
 ```
 
 
@@ -63,7 +63,7 @@ REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  la
 
 
 TOP_6_COUNTIES_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, POSITIVE))
-TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "COVID-19 Cases (Log Scale)")
+TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "Covid-19 Cases (Log Scale)")
 ```
 
 
@@ -73,7 +73,7 @@ TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale
 ```{r Largest_Counties_PER, echo=FALSE, warning=FALSE}
 TOP_6_COUNTIES_POSITIVE_PER_THOUS <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, COUNTY_POSITIVE_PER_THOUS))
 
-TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "COVID-19 Cases per 1000 People")
+TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "Covid-19 Cases per 1000 People")
 ```
 
 &nbsp;
@@ -92,6 +92,8 @@ By Michael J Zenz
 mail (at) mjzenz (dot) org
 &nbsp;
 [mjzenz.org](https://www.mjzenz.org)
+&nbsp;
+[github](https://github.com/mjzenz/WI-Covid)
 &nbsp;
 `r Sys.time()`
 
