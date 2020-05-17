@@ -6,6 +6,7 @@ library(httr)
 library(jsonlite)
 library(purrr)
 library(lubridate)
+library(zoo)
 
 #READS IN DATA FROM WI DHHS API
 DATA_REQUEST <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson")
@@ -33,7 +34,6 @@ COUNTY_VALUES$COUNTY <- str_to_upper(COUNTY_VALUES$NAME)
 COUNTY_VALUES <- merge(x = COUNTY_VALUES, y = WI_POP, by = "COUNTY")
 COUNTY_VALUES$COUNTY_POSITIVE_PER_THOUS <- COUNTY_VALUES$POSITIVE / (COUNTY_VALUES$POPULATION/1000) 
 COUNTY_VALUES$TOTAL_TESTS <- COUNTY_VALUES$NEGATIVE + COUNTY_VALUES$POSITIVE
-COUNTY_VALUES$PERCENT_POS <- COUNTY_VALUES$POSITIVE / COUNTY_VALUES$TOTAL_TESTS
 
 #CALCULATE DAILY CHANGES BY COUNTY
 COUNTY_VALUES <- COUNTY_VALUES[order(COUNTY_VALUES$COUNTY, COUNTY_VALUES$Date ),]
@@ -41,8 +41,18 @@ COUNTY_VALUES <- COUNTY_VALUES[order(COUNTY_VALUES$COUNTY, COUNTY_VALUES$Date ),
 COUNTY_VALUES <- COUNTY_VALUES %>%
                   group_by(COUNTY) %>%
                   mutate(.,
-                         CHANGE_POS = POSITIVE - lag(POSITIVE)
+                         CHANGE_POS = POSITIVE - lag(POSITIVE),
+                         CHANGE_NEG = NEGATIVE - lag(NEGATIVE),
                          )
+
+COUNTY_VALUES$CHANGE_TOTAL_TESTS <- COUNTY_VALUES$CHANGE_POS + COUNTY_VALUES$CHANGE_NEG
+COUNTY_VALUES$PERCENT_POS_CUM <- COUNTY_VALUES$POSITIVE / COUNTY_VALUES$TOTAL_TESTS
+COUNTY_VALUES$PERCENT_POS <- COUNTY_VALUES$CHANGE_POS / COUNTY_VALUES$CHANGE_TOTAL_TESTS
+
+COUNTY_VALUES<- COUNTY_VALUES %>%
+                group_by(COUNTY) %>%
+                mutate(AVG_5_PERCENT_POS = rollmean(PERCENT_POS, k = 5, fill = NA, align = "right"))
+
 
 
 COUNTY_VALUES_TOP_6_COUNTIES <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY %in% TOP_6_POP_COUNTIES),]
@@ -60,16 +70,20 @@ REGION_VALUES <- COUNTY_VALUES %>%
                             NEGATIVE = sum(NEGATIVE),
                             POSITIVE = sum(POSITIVE),
                             CHANGE_POS = sum(CHANGE_POS),
+                            CHANGE_NEG = sum(CHANGE_NEG),
+                            CHANGE_TOTAL_TESTS = sum(CHANGE_TOTAL_TESTS),
                             REG_POP = sum(POPULATION),
                   ) %>%
                   mutate(.,
                          TOTAL_TESTS = NEGATIVE + POSITIVE,
                          REGION_POSITIVE_PER_THOUS = POSITIVE / (REG_POP/1000)
                         )
-REGION_VALUES$PERCENT_POS <- REGION_VALUES$POSITIVE / REGION_VALUES$TOTAL_TESTS                     
-    
+REGION_VALUES$PERCENT_POS_CUM <- REGION_VALUES$POSITIVE / REGION_VALUES$TOTAL_TESTS                     
+REGION_VALUES$PERCENT_POS <- REGION_VALUES$CHANGE_POS/REGION_VALUES$CHANGE_TOTAL_TESTS    
 
-
+REGION_VALUES<- REGION_VALUES %>%
+  group_by(REGION) %>%
+  mutate(AVG_5_PERCENT_POS = rollmean(PERCENT_POS, k = 5, fill = NA, align = "right"))
 
 
 
