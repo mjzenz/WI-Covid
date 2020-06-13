@@ -51,7 +51,8 @@ COUNTY_VALUES$PERCENT_POS <- COUNTY_VALUES$CHANGE_POS / COUNTY_VALUES$CHANGE_TOT
 
 COUNTY_VALUES<- COUNTY_VALUES %>%
                 group_by(COUNTY) %>%
-                mutate(AVG_5_PERCENT_POS = rollmean(PERCENT_POS, k = 5, fill = NA, align = "right"))
+                mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 5, fill = NA, align = "right"),
+                       AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"))
 
 
 
@@ -83,7 +84,8 @@ REGION_VALUES$PERCENT_POS <- REGION_VALUES$CHANGE_POS/REGION_VALUES$CHANGE_TOTAL
 
 REGION_VALUES<- REGION_VALUES %>%
   group_by(REGION) %>%
-  mutate(AVG_5_PERCENT_POS = rollmean(PERCENT_POS, k = 5, fill = NA, align = "right"))
+  mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
+         AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"))
 
 
 
