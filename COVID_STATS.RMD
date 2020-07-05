@@ -117,8 +117,10 @@ TOP_6_COUNTIES_PERCENT_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY))
 ## Positive Cases in Dane County
 
 ```{r NEW_TOTAL_DANE, echo=FALSE, warning=FALSE}
-DANE_NEW_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_DANE, aes(x = Date))
-DANE_NEW_VALUES_POSITIVE  + geom_bar(aes(y = CHANGE_POS), stat = "identity", color = "red", fill = "red") + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + labs(y = "", title  = "New Daily Covid-19 Cases in Dane County (red), 7-day Trl. Avg. (black)") 
+
+DANE_NEW_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_DANE, aes(Date))
+DANE_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_line(aes(y = CHANGE_POS), color = "red") + labs(y = "", title  = "New Daily Covid-19 Cases in Dane County (7-day AVG)") 
+
 ```
 
 
