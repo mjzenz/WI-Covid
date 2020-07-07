@@ -51,7 +51,7 @@ COUNTY_VALUES$PERCENT_POS <- COUNTY_VALUES$CHANGE_POS / COUNTY_VALUES$CHANGE_TOT
 
 COUNTY_VALUES<- COUNTY_VALUES %>%
                 group_by(COUNTY) %>%
-                mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 5, fill = NA, align = "right"),
+                mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
                        AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"))
 
 
