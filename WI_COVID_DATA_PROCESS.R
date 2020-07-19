@@ -16,8 +16,8 @@ WI_COVID_DATA <- WI_COVID_DATA[,1:7]
 #LoadDttm changed in the data, so I removed this line.
 #WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$LoadDttm/1000)
 WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$LoadDttm)
-
-
+WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
+#Date_lims <- as.Date(c(Sys.Date() %m+% months(-3), Sys.Date()),  "%Y-%m-%d")
 MAX_DATE <- max(WI_COVID_DATA$Date)
 
 

@@ -24,7 +24,7 @@ This document contains confirmed Covid-19 cases as of `r format(MAX_DATE, format
 ```{r NEW_AVG_REGION, echo=FALSE, warning=FALSE}
 
 REGION_AVG_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_POS))
-REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)") 
 ```
 
 
@@ -33,7 +33,7 @@ REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + la
 ```{r NEW_TOTAL_REGION, echo=FALSE, warning=FALSE}
 
 REGION_NEW_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(fill = REGION, x = Date, y = CHANGE_POS))
-REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + labs(y = "", title  = "New Daily Covid-19 Cases")
+REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + labs(y = "", title  = "New Daily Covid-19 Cases") 
 ```
 
 
