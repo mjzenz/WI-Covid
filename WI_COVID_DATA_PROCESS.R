@@ -1,6 +1,7 @@
 library(readr)
 library(ggplot2)
 library(stringr)
+library(tidyr)
 library(dplyr)
 library(httr)
 library(jsonlite)
@@ -16,9 +17,23 @@ WI_COVID_DATA <- WI_COVID_DATA[,1:7]
 #LoadDttm changed in the data, so I removed this line.
 #WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$LoadDttm/1000)
 WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$LoadDttm)
-WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
-#Date_lims <- as.Date(c(Sys.Date() %m+% months(-3), Sys.Date()),  "%Y-%m-%d")
 MAX_DATE <- max(WI_COVID_DATA$Date)
+
+#ELIMINATE OLDER DATA
+WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
+WI_COVID_DATA[which(WI_COVID_DATA$NEGATIVE == -999),]$NEGATIVE <- 0
+WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$POSITIVE <- 0
+
+#This uses min_negative and min_positive but returns -999 for NA values
+WI_COVID_DATA <- WI_COVID_DATA %>%
+                group_by(GEO, GEOID) %>%
+                summarise(., min_negative = min(NEGATIVE),
+                          min_positive = min(POSITIVE)) %>%
+                inner_join(x = ., y = WI_COVID_DATA, by = c("GEO", "GEOID")) %>%
+                mutate(., NEGATIVE = NEGATIVE-min_negative,
+                       POSITIVE = POSITIVE - min_positive) %>%
+              select(., -c(min_negative, min_positive))
+
 
 
 #READ IN A FILE WITH COUNTY POPULATION VALUES AND REGION FROM DHS.  NOTE THAT THESE ARE 2018 VALUES.

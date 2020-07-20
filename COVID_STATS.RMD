@@ -1,5 +1,5 @@
 ---
-title: "WI Covid-19 Stats"
+title: "WI Covid-19 Stats (past 3 months)"
 output: html_document
 ---
 
@@ -14,7 +14,7 @@ source("WI_COVID_DATA_PROCESS.R")
 ```
 
 
-This document contains confirmed Covid-19 cases as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
+This document contains confirmed Covid-19 cases for the past 3 months as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
 
 # {.tabset}
 
