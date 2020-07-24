@@ -11,6 +11,8 @@ library(zoo)
 
 #READS IN DATA FROM WI DHHS API
 DATA_REQUEST <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson")
+
+print("Downloaded data from DHS")
 WI_COVID_DATA <-  fromJSON(rawToChar(DATA_REQUEST$content))
 WI_COVID_DATA <- WI_COVID_DATA[[c(4,2)]]
 WI_COVID_DATA <- WI_COVID_DATA[,1:7]
@@ -25,6 +27,8 @@ WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$GEO == "County"),]
 WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
 #WI_COVID_DATA[which(WI_COVID_DATA$NEGATIVE == -999),]$NEGATIVE <- 0
 #WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$POSITIVE <- 0
+print("Subset to last three months")
+
 
 #This uses min_negative and min_positive but returns -999 for NA values
 WI_COVID_DATA <- WI_COVID_DATA %>%
@@ -36,7 +40,7 @@ WI_COVID_DATA <- WI_COVID_DATA %>%
                        POSITIVE = POSITIVE - min_positive) %>%
               select(., -c(min_negative, min_positive))
 
-
+print("Calculated counts from last three months")
 
 #READ IN A FILE WITH COUNTY POPULATION VALUES AND REGION FROM DHS.  NOTE THAT THESE ARE 2018 VALUES.
 WI_POP <- read_csv("WI_POP.csv")
@@ -77,6 +81,7 @@ COUNTY_VALUES_TOP_6_COUNTIES <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY %in% TO
 
 COUNTY_VALUES_DANE <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY == "DANE"),]
 
+print("Calculated county values")
 
 
 REGION_VALUES <- COUNTY_VALUES %>%
@@ -101,5 +106,5 @@ REGION_VALUES<- REGION_VALUES %>%
   mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
          AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"))
 
-
+print("Calculated region values")
 

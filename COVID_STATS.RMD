@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 
-```{r process, echo=FALSE, message=FALSE, warning=FALSE}
+```{r process, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
 source("WI_COVID_DATA_PROCESS.R")
 ```
 
