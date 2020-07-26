@@ -23,8 +23,10 @@ This document contains confirmed Covid-19 cases for the past 3 months as of `r f
 
 ```{r NEW_AVG_REGION, echo=FALSE, warning=FALSE}
 
-REGION_AVG_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_POS))
-REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)") 
+REGION_AVG_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_POS)) 
+REGION_AVG_VALUES_POSITIVE_plot <- REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)") 
+
+ggplotly(REGION_AVG_VALUES_POSITIVE_plot, tooltip = "all")
 ```
 
 

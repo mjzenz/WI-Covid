@@ -8,6 +8,7 @@ library(jsonlite)
 library(purrr)
 library(lubridate)
 library(zoo)
+library(plotly)
 
 #READS IN DATA FROM WI DHHS API
 DATA_REQUEST <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson")
