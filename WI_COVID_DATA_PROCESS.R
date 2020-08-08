@@ -15,10 +15,10 @@ DATA_REQUEST <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912
 print("Downloaded data from DHS")
 WI_COVID_DATA <-  fromJSON(rawToChar(DATA_REQUEST$content))
 WI_COVID_DATA <- WI_COVID_DATA[[c(4,2)]]
-WI_COVID_DATA <- WI_COVID_DATA[,1:7]
+WI_COVID_DATA <- WI_COVID_DATA[,c("OBJECTID", "GEOID", "GEO", "NAME", "NEGATIVE", "POSITIVE", "DATE")]
 #LoadDttm changed in the data, so I removed this line.
 #WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$LoadDttm/1000)
-WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$LoadDttm)
+WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$DATE)
 MAX_DATE <- max(WI_COVID_DATA$Date)
 
 #ELIMINATE NON-COUNTY DATA
