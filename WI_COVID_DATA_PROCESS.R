@@ -11,15 +11,16 @@ library(lubridate)
 library(zoo)
 
 #READS IN DATA FROM WI DHHS API
-DATA_REQUEST <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson")
+DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson?where=GEO%20%3D%20'County'")
 
 print("Downloaded data from DHS")
-WI_COVID_DATA <-  fromJSON(rawToChar(DATA_REQUEST$content))
+WI_COVID_DATA <-  fromJSON(rawToChar(DATA.REQUEST$content))
 WI_COVID_DATA <- WI_COVID_DATA[[c(4,2)]]
-WI_COVID_DATA <- WI_COVID_DATA[,1:7]
+WI_COVID_DATA <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME","NEGATIVE", "POSITIVE", "DATE")]
+
 #LoadDttm changed in the data, so I removed this line.
-#WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$LoadDttm/1000)
-WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$LoadDttm)
+#WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$DATE/1000)
+WI_COVID_DATA$Date <- lubridate::date(WI_COVID_DATA$DATE)
 MAX_DATE <- max(WI_COVID_DATA$Date)
 
 #ELIMINATE NON-COUNTY DATA
@@ -51,7 +52,8 @@ WI_POP <- merge(x = WI_POP, y = REGION_POP, by = "REGION")
 TOP_6_POP_COUNTIES <- WI_POP[order(-WI_POP$POPULATION),c("COUNTY")]
 TOP_6_POP_COUNTIES <- TOP_6_POP_COUNTIES[1:6]
 
-COUNTY_VALUES <- WI_COVID_DATA[which(WI_COVID_DATA$GEO == "County"), c(1:8)]
+#COUNTY_VALUES <- WI_COVID_DATA[which(WI_COVID_DATA$GEO == "County"), c(1:8)]
+COUNTY_VALUES <- WI_COVID_DATA[which(WI_COVID_DATA$GEO == "County"),]
 COUNTY_VALUES$COUNTY <- str_to_upper(COUNTY_VALUES$NAME)
 COUNTY_VALUES <- merge(x = COUNTY_VALUES, y = WI_POP, by = "COUNTY")
 COUNTY_VALUES$COUNTY_POSITIVE_PER_THOUS <- COUNTY_VALUES$POSITIVE / (COUNTY_VALUES$POPULATION/1000) 
