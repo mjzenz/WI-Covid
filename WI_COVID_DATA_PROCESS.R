@@ -16,7 +16,7 @@ DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae491
 print("Downloaded data from DHS")
 WI_COVID_DATA <-  fromJSON(rawToChar(DATA.REQUEST$content))
 WI_COVID_DATA <- WI_COVID_DATA[[c(4,2)]]
-WI_COVID_DATA <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME","NEGATIVE", "POSITIVE", "DATE")]
+WI_COVID_DATA <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME","NEGATIVE", "POSITIVE","DEATHS", "DATE")]
 
 #LoadDttm changed in the data, so I removed this line.
 #WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$DATE/1000)
@@ -36,11 +36,13 @@ print("Subset to last three months")
 WI_COVID_DATA <- WI_COVID_DATA %>%
                 group_by(GEO, GEOID) %>%
                 summarise(., min_negative = min(NEGATIVE),
-                          min_positive = min(POSITIVE)) %>%
+                          min_positive = min(POSITIVE),
+                          min_deaths = min(DEATHS)) %>%
                 inner_join(x = ., y = WI_COVID_DATA, by = c("GEO", "GEOID")) %>%
                 mutate(., NEGATIVE = NEGATIVE-min_negative,
-                       POSITIVE = POSITIVE - min_positive) %>%
-              select(., -c(min_negative, min_positive))
+                       POSITIVE = POSITIVE - min_positive,
+                       DEATHS = DEATHS - min_deaths) %>%
+              select(., -c(min_negative, min_positive, min_deaths))
 
 print("Calculated counts from last three months")
 
@@ -67,6 +69,7 @@ COUNTY_VALUES <- COUNTY_VALUES %>%
                   mutate(.,
                          CHANGE_POS = POSITIVE - lag(POSITIVE),
                          CHANGE_NEG = NEGATIVE - lag(NEGATIVE),
+                         CHANGE_DEATHS = DEATHS - lag(DEATHS)
                          )
 
 COUNTY_VALUES$CHANGE_TOTAL_TESTS <- COUNTY_VALUES$CHANGE_POS + COUNTY_VALUES$CHANGE_NEG
@@ -92,8 +95,10 @@ REGION_VALUES <- COUNTY_VALUES %>%
                   summarize(., 
                             NEGATIVE = sum(NEGATIVE),
                             POSITIVE = sum(POSITIVE),
+                            DEATHS = sum(DEATHS),
                             CHANGE_POS = sum(CHANGE_POS),
                             CHANGE_NEG = sum(CHANGE_NEG),
+                            CHANGE_DEATHS = sum(CHANGE_DEATHS),
                             CHANGE_TOTAL_TESTS = sum(CHANGE_TOTAL_TESTS),
                             REG_POP = sum(POPULATION),
                   ) %>%
@@ -111,3 +116,28 @@ REGION_VALUES<- REGION_VALUES %>%
 
 print("Calculated region values")
 
+
+STATEWIDE_VALUES  <- COUNTY_VALUES  %>%
+                  group_by(Date) %>%
+                  summarize(., 
+                            NEGATIVE = sum(NEGATIVE),
+                            POSITIVE = sum(POSITIVE),
+                            DEATHS = sum(DEATHS),
+                            CHANGE_POS = sum(CHANGE_POS),
+                            CHANGE_NEG = sum(CHANGE_NEG),
+                            CHANGE_DEATHS = sum(CHANGE_DEATHS),
+                            CHANGE_TOTAL_TESTS = sum(CHANGE_TOTAL_TESTS),
+                            STATE_POP = sum(POPULATION)) %>%
+                  mutate(.,
+                         TOTAL_TESTS = NEGATIVE + POSITIVE,
+                         STATE_POSITIVE_PER_THOUS = POSITIVE / (STATE_POP/1000)
+                         )
+
+STATEWIDE_VALUES$PERCENT_POS_CUM <- STATEWIDE_VALUES$POSITIVE / STATEWIDE_VALUES$TOTAL_TESTS                     
+STATEWIDE_VALUES$PERCENT_POS <- STATEWIDE_VALUES$CHANGE_POS/ STATEWIDE_VALUES$CHANGE_TOTAL_TESTS   
+
+
+STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
+                    mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
+                           AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
+                           AVG_7_CHANGE_DEATHS = rollmean(CHANGE_DEATHS, k = 7, fill = NA, align = "right"))    

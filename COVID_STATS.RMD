@@ -125,6 +125,18 @@ DANE_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black"
 
 
 
+## Deaths
+
+```{r NEW_DEATHS_STATE, echo=FALSE, warning=FALSE}
+
+STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
+STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_line(aes(y = CHANGE_DEATHS), color = "red") + labs(y = "", title  = "New Daily Covid-19 Deaths in WI (7-day AVG)") 
+
+```
+
+
+
+
 # {-}
 By Michael J Zenz
 &nbsp;
