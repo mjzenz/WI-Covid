@@ -87,6 +87,12 @@ COUNTY_VALUES_TOP_6_COUNTIES <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY %in% TO
 
 COUNTY_VALUES_DANE <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY == "DANE"),]
 
+COUNTY_VALUES_DANE$MAX_POS  <- NA
+COUNTY_VALUES_DANE$MAX_POS  <- as.integer(COUNTY_VALUES_DANE$MAX_POS)
+COUNTY_VALUES_DANE[which(COUNTY_VALUES_DANE$Date ==  MAX_DATE),]$MAX_POS  <- COUNTY_VALUES_DANE[which(COUNTY_VALUES_DANE$Date ==  MAX_DATE),]$CHANGE_POS
+
+
+
 print("Calculated county values")
 
 
@@ -116,6 +122,7 @@ REGION_VALUES<- REGION_VALUES %>%
 
 print("Calculated region values")
 
+#Calculate statewide values.
 
 STATEWIDE_VALUES  <- COUNTY_VALUES  %>%
                   group_by(Date) %>%
@@ -141,3 +148,11 @@ STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
                     mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
                            AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
                            AVG_7_CHANGE_DEATHS = rollmean(CHANGE_DEATHS, k = 7, fill = NA, align = "right"))    
+STATEWIDE_VALUES$MAX_POS  <- NA
+STATEWIDE_VALUES$MAX_POS  <- as.integer(STATEWIDE_VALUES$MAX_POS)
+STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date ==  MAX_DATE),]$MAX_POS  <- STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date ==  MAX_DATE),]$CHANGE_POS
+
+
+STATEWIDE_VALUES$MAX_DEATHS  <- NA
+STATEWIDE_VALUES$MAX_DEATHS  <- as.integer(STATEWIDE_VALUES$MAX_DEATHS)
+STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$MAX_DEATHS  <- STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$CHANGE_DEATHS

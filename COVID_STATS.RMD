@@ -119,7 +119,7 @@ TOP_6_COUNTIES_PERCENT_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY))
 ```{r NEW_TOTAL_DANE, echo=FALSE, warning=FALSE}
 
 DANE_NEW_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_DANE, aes(Date))
-DANE_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_point(aes(y = CHANGE_POS), fill = "red" ,color = "red") + labs(y = "", title  = "New Daily Covid-19 Cases in Dane County (7-day AVG)") 
+DANE_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_point(aes(y = CHANGE_POS), fill = "red" ,color = "red") + geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue") +  labs(y = "", title  = "Daily Dane CTY Cases (7-day AVG in black, today's value in blue)") 
 
 ```
 
@@ -130,7 +130,7 @@ DANE_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black"
 ```{r NEW_DEATHS_STATE, echo=FALSE, warning=FALSE}
 
 STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
-STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") + labs(y = "", title  = "New Daily Covid-19 Deaths in WI (7-day AVG)") 
+STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + labs(y = "", title  = "Daily WI Deaths (7-day AVG in black, today's value in blue)") 
 
 ```
 
