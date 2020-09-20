@@ -18,7 +18,7 @@ This document contains confirmed Covid-19 cases for the past 3 months as of `r f
 
 # {.tabset}
 
-## Positive Cases by Region 
+## Regions 
 [See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
 
 ```{r NEW_AVG_REGION, echo=FALSE, warning=FALSE}
@@ -75,7 +75,7 @@ REGION_PERCENT_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(
 
 
 
-## Positive Cases in 6 Most Populous Counties
+## Most Populous Counties
 
 
 ```{r NEW_AVG_COUNTY, echo=FALSE, warning=FALSE}
@@ -114,18 +114,62 @@ TOP_6_COUNTIES_PERCENT_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY))
 ```
 
 
-## Positive Cases in Dane County
+## New Positive Cases in Select Counties
 
-```{r NEW_TOTAL_DANE, echo=FALSE, warning=FALSE}
+```{r NEW_TOTAL_SELECT, echo=FALSE, warning=FALSE}
 
-DANE_NEW_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_DANE, aes(Date))
-DANE_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_point(aes(y = CHANGE_POS), fill = "red" ,color = "red") + geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue") +  labs(y = "", title  = "Daily Dane CTY Cases (7-day AVG in black, today's value in blue)") 
+SELECT_COUNTY_NEW_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_SELECT, aes(Date))
+SELECT_COUNTY_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_point(aes(y = CHANGE_POS), fill = "red" ,color = "red") + geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue") + facet_wrap(~ COUNTY, ncol = 2, scales = "free")   +  labs(y = "", title  = "Daily CTY Cases (7-day AVG in black, today's value in blue)") 
 
 ```
 
+## Avg. New Pos. Cases in Most Pop. Counties by Region
+
+### North
+
+```{r NEW_AVG_COUNTY_NORTH, echo=FALSE, warning=FALSE}
+
+COUNTY_AVG_VALUES_POSITIVE_NORTH <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "N"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+COUNTY_AVG_VALUES_POSITIVE_NORTH + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+```
 
 
-## Deaths
+### Northeast
+
+```{r NEW_AVG_COUNTY_NORTHEAST, echo=FALSE, warning=FALSE}
+
+COUNTY_AVG_VALUES_POSITIVE_NORTHEAST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "NE"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+COUNTY_AVG_VALUES_POSITIVE_NORTHEAST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+```
+
+
+### South
+
+```{r NEW_AVG_COUNTY_SOUTH, echo=FALSE, warning=FALSE}
+
+COUNTY_AVG_VALUES_POSITIVE_SOUTH <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "S"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+COUNTY_AVG_VALUES_POSITIVE_SOUTH + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+```
+
+### Southeast
+
+
+```{r NEW_AVG_COUNTY_SOUTHEAST, echo=FALSE, warning=FALSE}
+
+COUNTY_AVG_VALUES_POSITIVE_SOUTHEAST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "SE"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+COUNTY_AVG_VALUES_POSITIVE_SOUTHEAST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+```
+
+### West
+
+```{r NEW_AVG_COUNTY_WEST, echo=FALSE, warning=FALSE}
+
+COUNTY_AVG_VALUES_POSITIVE_WEST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "W"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+COUNTY_AVG_VALUES_POSITIVE_WEST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+```
+
+
+## New Deaths
 
 ```{r NEW_DEATHS_STATE, echo=FALSE, warning=FALSE}
 
