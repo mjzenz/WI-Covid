@@ -168,6 +168,14 @@ COUNTY_AVG_VALUES_POSITIVE_WEST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(
 COUNTY_AVG_VALUES_POSITIVE_WEST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
 
+## New Hospitalizations
+
+
+```{r NEW_AVG_HOSP_REGION, echo=FALSE, warning=FALSE}
+
+REGION_AVG_HOSP_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_HOSP))
+REGION_AVG_HOSP_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New  Covid-19 Hospitalizations (7-day trailing average)") 
+```
 
 ## New Deaths
 
@@ -177,6 +185,9 @@ STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
 STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + labs(y = "", title  = "Daily WI Deaths (7-day AVG in black, today's value in blue)") 
 
 ```
+
+
+
 
 
 

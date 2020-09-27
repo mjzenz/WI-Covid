@@ -16,7 +16,9 @@ DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae491
 print("Downloaded data from DHS")
 WI_COVID_DATA <-  fromJSON(rawToChar(DATA.REQUEST$content))
 WI_COVID_DATA <- WI_COVID_DATA[[c(4,2)]]
-WI_COVID_DATA <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME","NEGATIVE", "POSITIVE","DEATHS", "DATE")]
+WI_COVID_DATA <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME","NEGATIVE", "POSITIVE","HOSP_YES", "HOSP_NO", "HOSP_UNK", "POS_FEM","POS_MALE", "POS_OTH", "POS_0_9", "POS_10_19","POS_20_29", "POS_30_39", "POS_40_49", "POS_50_59", "POS_60_69", "POS_70_79", "POS_80_89", "POS_90"  ,"DEATHS","DTHS_FEM","DTHS_MALE", "DTHS_OTH", "DTHS_0_9", "DTHS_10_19","DTHS_20_29", "DTHS_30_39", "DTHS_40_49", "DTHS_50_59", "DTHS_60_69", "DTHS_70_79", "DTHS_80_89", "DTHS_90"   , "DATE")]
+
+
 
 #LoadDttm changed in the data, so I removed this line.
 #WI_COVID_DATA$Date <- .POSIXct(WI_COVID_DATA$DATE/1000)
@@ -25,24 +27,30 @@ MAX_DATE <- max(WI_COVID_DATA$Date)
 
 #ELIMINATE NON-COUNTY DATA
 WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$GEO == "County"),]
+
+
 #ELIMINATE OLDER DATA
 WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
 #WI_COVID_DATA[which(WI_COVID_DATA$NEGATIVE == -999),]$NEGATIVE <- 0
 #WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$POSITIVE <- 0
 print("Subset to last three months")
 
+WI_COVID_AGE  <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME", "POS_0_9", "POS_10_19","POS_20_29", "POS_30_39", "POS_40_49", "POS_50_59", "POS_60_69", "POS_70_79", "POS_80_89", "POS_90" , "Date")]
+#WI_COVID_HOSP  <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME", "HOSP_YES", "HOSP_NO", "HOSP_UNK", "Date")]
 
 #This uses min_negative and min_positive but returns -999 for NA values
 WI_COVID_DATA <- WI_COVID_DATA %>%
                 group_by(GEO, GEOID) %>%
                 summarise(., min_negative = min(NEGATIVE),
                           min_positive = min(POSITIVE),
+                          min_hos = min(HOSP_YES),
                           min_deaths = min(DEATHS)) %>%
                 inner_join(x = ., y = WI_COVID_DATA, by = c("GEO", "GEOID")) %>%
                 mutate(., NEGATIVE = NEGATIVE-min_negative,
                        POSITIVE = POSITIVE - min_positive,
+                       HOSP_YES = HOSP_YES - min_hos,
                        DEATHS = DEATHS - min_deaths) %>%
-              select(., -c(min_negative, min_positive, min_deaths))
+              select(., -c(min_negative, min_positive,min_hos, min_deaths))
 
 print("Calculated counts from last three months")
 
@@ -74,6 +82,7 @@ COUNTY_VALUES <- COUNTY_VALUES %>%
                   mutate(.,
                          CHANGE_POS = POSITIVE - lag(POSITIVE),
                          CHANGE_NEG = NEGATIVE - lag(NEGATIVE),
+                         CHANGE_HOSP = HOSP_YES - lag(HOSP_YES),
                          CHANGE_DEATHS = DEATHS - lag(DEATHS)
                          )
 
@@ -84,7 +93,8 @@ COUNTY_VALUES$PERCENT_POS <- COUNTY_VALUES$CHANGE_POS / COUNTY_VALUES$CHANGE_TOT
 COUNTY_VALUES <- COUNTY_VALUES %>%
                 group_by(COUNTY) %>%
                 mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
-                       AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"))
+                       AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
+                       AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"))
 
 
 
@@ -117,9 +127,11 @@ REGION_VALUES <- COUNTY_VALUES %>%
                   summarize(., 
                             NEGATIVE = sum(NEGATIVE),
                             POSITIVE = sum(POSITIVE),
+                            HOSP_YES = sum(HOSP_YES),
                             DEATHS = sum(DEATHS),
                             CHANGE_POS = sum(CHANGE_POS),
                             CHANGE_NEG = sum(CHANGE_NEG),
+                            CHANGE_HOSP = sum(CHANGE_HOSP),
                             CHANGE_DEATHS = sum(CHANGE_DEATHS),
                             CHANGE_TOTAL_TESTS = sum(CHANGE_TOTAL_TESTS),
                             REG_POP = sum(POPULATION),
@@ -134,7 +146,8 @@ REGION_VALUES$PERCENT_POS <- REGION_VALUES$CHANGE_POS/REGION_VALUES$CHANGE_TOTAL
 REGION_VALUES<- REGION_VALUES %>%
   group_by(REGION) %>%
   mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
-         AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"))
+         AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
+          AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"))
 
 print("Calculated region values")
 
@@ -145,9 +158,11 @@ STATEWIDE_VALUES  <- COUNTY_VALUES  %>%
                   summarize(., 
                             NEGATIVE = sum(NEGATIVE),
                             POSITIVE = sum(POSITIVE),
+                            HOSP_YES = sum(HOSP_YES),
                             DEATHS = sum(DEATHS),
                             CHANGE_POS = sum(CHANGE_POS),
                             CHANGE_NEG = sum(CHANGE_NEG),
+                            CHANGE_HOSP = sum(CHANGE_HOSP),
                             CHANGE_DEATHS = sum(CHANGE_DEATHS),
                             CHANGE_TOTAL_TESTS = sum(CHANGE_TOTAL_TESTS),
                             STATE_POP = sum(POPULATION)) %>%
@@ -163,6 +178,7 @@ STATEWIDE_VALUES$PERCENT_POS <- STATEWIDE_VALUES$CHANGE_POS/ STATEWIDE_VALUES$CH
 STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
                     mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
                            AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
+                            AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"),
                            AVG_7_CHANGE_DEATHS = rollmean(CHANGE_DEATHS, k = 7, fill = NA, align = "right"))    
 STATEWIDE_VALUES$MAX_POS  <- NA
 STATEWIDE_VALUES$MAX_POS  <- as.integer(STATEWIDE_VALUES$MAX_POS)
@@ -172,3 +188,12 @@ STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date ==  MAX_DATE),]$MAX_POS  <- STATEWI
 STATEWIDE_VALUES$MAX_DEATHS  <- NA
 STATEWIDE_VALUES$MAX_DEATHS  <- as.integer(STATEWIDE_VALUES$MAX_DEATHS)
 STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$MAX_DEATHS  <- STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$CHANGE_DEATHS
+
+
+
+
+##AGE GROUPS
+
+
+
+                    
