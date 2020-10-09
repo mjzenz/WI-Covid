@@ -11,7 +11,9 @@ library(lubridate)
 library(zoo)
 
 #READS IN DATA FROM WI DHHS API
-DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson?where=GEO%20%3D%20'County'")
+#County Filter Stopped Working, so removed it.
+#DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson?where=GEO%20%3D%20'County'")
+DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/5374188992374b318d3e2305216ee413_12.geojson")
 
 print("Downloaded data from DHS")
 WI_COVID_DATA <-  fromJSON(rawToChar(DATA.REQUEST$content))
