@@ -14,7 +14,7 @@ source("WI_COVID_DATA_PROCESS.R")
 ```
 
 
-This document contains confirmed Covid-19 cases for the past 3 months as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
+This document contains confirmed Covid-19 cases, hospitalizations, and deaths for the past 3 months as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
 
 # {.tabset}
 
@@ -171,10 +171,20 @@ COUNTY_AVG_VALUES_POSITIVE_WEST + geom_line(aes(color = COUNTY, group = COUNTY))
 ## New Hospitalizations
 
 
+```{r NEW_HOSP_STATE, echo=FALSE, warning=FALSE}
+
+STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
+STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_HOSP), color = "black") + geom_point(aes(y = CHANGE_HOSP),color = "red", fill = "red") +  geom_point(aes(y = MAX_HOSP), fill = "blue" ,color = "blue") + labs(y = "", title  = "New WI Covid-19 Hospitalizations (7-day AVG in black, today's value in blue)") 
+
+```
+
+
+
+
 ```{r NEW_AVG_HOSP_REGION, echo=FALSE, warning=FALSE}
 
 REGION_AVG_HOSP_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_HOSP))
-REGION_AVG_HOSP_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New  Covid-19 Hospitalizations (7-day trailing average)") 
+REGION_AVG_HOSP_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New Covid-19 Hospitalizations (7-day trailing average)") 
 ```
 
 ## New Deaths
@@ -182,7 +192,7 @@ REGION_AVG_HOSP_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION))
 ```{r NEW_DEATHS_STATE, echo=FALSE, warning=FALSE}
 
 STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
-STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + labs(y = "", title  = "Daily WI Deaths (7-day AVG in black, today's value in blue)") 
+STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + labs(y = "", title  = "Daily WI Covid-19 Deaths (7-day AVG in black, today's value in blue)") 
 
 ```
 
