@@ -37,6 +37,10 @@ if(length(WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$NEGATIVE)>0){WI_
 if(length(WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$POSITIVE)>0){WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$POSITIVE <- 0}
 if(length(WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$HOSP_YES)>0){ WI_COVID_DATA[which(WI_COVID_DATA$HOSP_YES == -999),]$HOSP_YES <- 0}
 if(length(WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$DEATHS)>0){WI_COVID_DATA[which(WI_COVID_DATA$DEATHS == -999),]$DEATHS <- 0}
+
+#Remove date with no data - state system upgrade being done.
+WI_COVID_DATA <- WI_COVID_DATA[which(!(WI_COVID_DATA$Date == "2020-10-17")),]
+
 print("Subset to last three months")
 
 WI_COVID_AGE  <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME", "POS_0_9", "POS_10_19","POS_20_29", "POS_30_39", "POS_40_49", "POS_50_59", "POS_60_69", "POS_70_79", "POS_80_89", "POS_90" , "Date")]
