@@ -182,29 +182,34 @@ STATEWIDE_VALUES  <- COUNTY_VALUES  %>%
 STATEWIDE_VALUES$PERCENT_POS_CUM <- STATEWIDE_VALUES$POSITIVE / STATEWIDE_VALUES$TOTAL_TESTS                     
 STATEWIDE_VALUES$PERCENT_POS <- STATEWIDE_VALUES$CHANGE_POS/ STATEWIDE_VALUES$CHANGE_TOTAL_TESTS   
 
-
 #WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
 #MIN_DATE <- MAX_DATE %m+% months(MIN_DATE_INTERVAL)
-MIN_DATE_percent_compare <- "2020-07-15"
-
-
-STATEWIDE_VALUES$CHANGE_POS_percent <- STATEWIDE_VALUES$CHANGE_POS /  
-                                              STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MIN_DATE_percent_compare),]$CHANGE_POS
-  
-STATEWIDE_VALUES$CHANGE_HOSP_percent <- STATEWIDE_VALUES$CHANGE_HOSP / 40
-#                                          (.05 * STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MIN_DATE_percent_compare),]$CHANGE_POS)
-
-STATEWIDE_VALUES$CHANGE_DEATHS_percent <- STATEWIDE_VALUES$CHANGE_DEATHS /  8
-                                          #(.01 * STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MIN_DATE_percent_compare),]$CHANGE_POS)
+MIN_DATE_percent_compare <- "2020-08-01"
 
 STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
-                    mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
+                    mutate(., AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
                            AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
                             AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"),
-                           AVG_7_CHANGE_DEATHS = rollmean(CHANGE_DEATHS, k = 7, fill = NA, align = "right"),
-                           AVG_7_CHANGE_POS_percent =  rollmean(STATEWIDE_VALUES$CHANGE_POS_percent, k = 7, fill = NA, align = "right"),
-                           AVG_7_CHANGE_HOSP_percent =  rollmean(STATEWIDE_VALUES$CHANGE_HOSP_percent, k = 7, fill = NA, align = "right"),
-                           AVG_7_CHANGE_DEATHS_percent =  rollmean(STATEWIDE_VALUES$CHANGE_DEATHS_percent, k = 7, fill = NA, align = "right"))    
+                           AVG_7_CHANGE_DEATHS = rollmean(CHANGE_DEATHS, k = 7, fill = NA, align = "right"))
+
+                             
+STATEWIDE_VALUES$CHANGE_POS_percent <- STATEWIDE_VALUES$CHANGE_POS /  
+                             STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MIN_DATE_percent_compare),]$AVG_7_CHANGE_POS
+                           
+STATEWIDE_VALUES$CHANGE_HOSP_percent <- STATEWIDE_VALUES$CHANGE_HOSP / 
+                             STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MIN_DATE_percent_compare),]$AVG_7_CHANGE_HOSP
+                             
+
+STATEWIDE_VALUES$CHANGE_DEATHS_percent <- STATEWIDE_VALUES$CHANGE_DEATHS /  
+                             STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MIN_DATE_percent_compare),]$AVG_7_CHANGE_DEATHS
+                           
+STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
+                  mutate(., AVG_7_CHANGE_POS_percent =  rollmean(STATEWIDE_VALUES$CHANGE_POS_percent, k = 7, fill = NA, align = "right"),
+                         AVG_7_CHANGE_HOSP_percent =  rollmean(STATEWIDE_VALUES$CHANGE_HOSP_percent, k = 7, fill = NA, align = "right"),
+                         AVG_7_CHANGE_DEATHS_percent =  rollmean(STATEWIDE_VALUES$CHANGE_DEATHS_percent, k = 7, fill = NA, align = "right"))    
+
+                           
+                           
 STATEWIDE_VALUES$MAX_POS  <- NA
 STATEWIDE_VALUES$MAX_POS  <- as.integer(STATEWIDE_VALUES$MAX_POS)
 STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date ==  MAX_DATE),]$MAX_POS  <- STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date ==  MAX_DATE),]$CHANGE_POS
@@ -219,9 +224,19 @@ STATEWIDE_VALUES$MAX_DEATHS  <- as.integer(STATEWIDE_VALUES$MAX_DEATHS)
 STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$MAX_DEATHS  <- STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$CHANGE_DEATHS
 
 
+### Log curve fit
 
+STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
+                    mutate(., log_CHANGE_DEATHS = log(CHANGE_DEATHS), 
+                           log_CHANGE_HOSP = log(CHANGE_HOSP))
 
+lm_DATE_MIN <- "2020-09-01"
 
+Deaths_lm <- lm(CHANGE_DEATHS ~ Date, STATEWIDE_VALUES, subset = (Date > lm_DATE_MIN))
+summary(Deaths_lm)
 
+TEST <- Deaths_lm$coefficients
+
+log(2)/ Deaths_lm$coefficients[2]
 
                     
