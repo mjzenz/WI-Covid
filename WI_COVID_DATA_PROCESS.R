@@ -155,7 +155,8 @@ REGION_VALUES<- REGION_VALUES %>%
   group_by(REGION) %>%
   mutate(AVG_7_PERCENT_POS = rollmean(PERCENT_POS, k = 7, fill = NA, align = "right"),
          AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
-          AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"))
+          AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"),
+         AVG_7_CHANGE_DEATHS = rollmean(CHANGE_DEATHS, k = 7, fill = NA, align = "right"))
 
 print("Calculated region values")
 
@@ -226,17 +227,29 @@ STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$MAX_DEATHS  <- STATE
 
 ### Log curve fit
 
-STATEWIDE_VALUES <- STATEWIDE_VALUES %>%
-                    mutate(., log_CHANGE_DEATHS = log(CHANGE_DEATHS), 
-                           log_CHANGE_HOSP = log(CHANGE_HOSP))
+STATEWIDE_VALUES_VALID <- STATEWIDE_VALUES[which(!(STATEWIDE_VALUES$CHANGE_DEATHS < 0 | STATEWIDE_VALUES$CHANGE_HOSP < 0)),]
 
-lm_DATE_MIN <- "2020-09-01"
 
-Deaths_lm <- lm(CHANGE_DEATHS ~ Date, STATEWIDE_VALUES, subset = (Date > lm_DATE_MIN))
+STATEWIDE_VALUES_VALID <- STATEWIDE_VALUES_VALID %>%
+                    mutate(., day_count = row_number(),
+                           log_CHANGE_DEATHS = if_else(CHANGE_DEATHS == 0, 0, log(CHANGE_DEATHS)), 
+                           log_CHANGE_HOSP = if_else(CHANGE_HOSP ==0, 0,log(CHANGE_HOSP)))
+
+
+MAX_DAY_COUNT <- STATEWIDE_VALUES_VALID[which(STATEWIDE_VALUES_VALID$Date == MAX_DATE),]$day_count
+
+lm_DATE_MIN <- MAX_DATE - 50
+
+Deaths_lm <- lm(log_CHANGE_DEATHS ~ Date, STATEWIDE_VALUES_VALID, subset = (Date >= lm_DATE_MIN))
+
 summary(Deaths_lm)
 
-TEST <- Deaths_lm$coefficients
 
-log(2)/ Deaths_lm$coefficients[2]
+Death_Doubling <- as.numeric((log(2))/ (Deaths_lm$coefficients[2]))
 
-                    
+Hosp_lm <- lm(log_CHANGE_HOSP ~ Date, STATEWIDE_VALUES_VALID, subset = (Date >= lm_DATE_MIN))
+
+summary(Hosp_lm)
+
+
+Hosp_Doubling <- as.numeric((log(2))/ (Hosp_lm$coefficients[2]))
