@@ -1,5 +1,5 @@
 ---
-title: "WI Covid-19 Stats (past 3 months)"
+title: "WI Covid-19 Stats"
 output: html_document
 ---
 
@@ -10,21 +10,156 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ```{r process, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+MIN_DATE_INTERVAL <- -3
 source("WI_COVID_DATA_PROCESS.R")
+Date_lims <- as.Date(c(MAX_DATE %m+% months(MIN_DATE_INTERVAL), MAX_DATE),  "%Y-%m-%d")
+
 ```
 
 
-This document contains confirmed Covid-19 cases, hospitalizations, and deaths for the past 3 months as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
+This document contains confirmed Covid-19 cases, hospitalizations, and deaths in Wisconsin as of `r format(MAX_DATE, format = "%A %B %d, %Y")`.
+
+[See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
 
 # {.tabset}
 
+
+## State-wide
+
+### Recent
+
+```{r NEW_CASES_STATE, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + 
+  geom_point(aes(y = CHANGE_POS),color = "red", fill = "red") +  
+  geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue")  + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Cases", subtitle = "7-day AVG in black, today's value in blue") 
+
+```
+
+&nbsp;
+
+```{r NEW_HOSP_STATE, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_HOSP), color = "black") + 
+  geom_point(aes(y = CHANGE_HOSP),color = "red", fill = "red") +  
+  geom_point(aes(y = MAX_HOSP), fill = "blue" ,color = "blue")  + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Hospitalizations", subtitle = "7-day AVG in black, today's value in blue") 
+
+```
+
+&nbsp;
+
+
+```{r NEW_DEATHS_STATE, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + 
+  geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  
+  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Deaths", subtitle =  "7-day AVG in black, today's value in blue") 
+
+```
+
+&nbsp;
+
+* **NEW HOSPITALIZATIONS** are doubling every `r round(Hosp_Doubling, 0)` days.
+
+* **NEW DEATHS** are doubling every `r round(Death_Doubling, 0)` days.  
+
+
+```{r NEW_DEATHS_STATE_LOG, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES_VALID, aes(x = Date))
+PLOT  + geom_point(aes(y = CHANGE_DEATHS), color = "red", fill = "red") +  
+  stat_smooth(aes(y = CHANGE_DEATHS), method = "lm",formula = y~x,  col = "red") +
+ geom_point(aes(y = CHANGE_HOSP), color = "blue", fill = "blue") +  
+  stat_smooth(aes(y = CHANGE_HOSP), method = "lm",formula = y~x, col = "blue") +
+  scale_y_log10()+
+  scale_x_date(limits = date(c(lm_DATE_MIN, MAX_DATE))) +
+  labs(y = "New Hosp./Deaths", title  = "Exponential Growth in New Hospitalizations and Deaths", subtitle =  "Hosp. in blue, deaths in red, line slope represents exponential growth rate") 
+
+```
+
+
+
+
+
+<!-- ```{r NEW_CASES_HOSP_DEATH, echo=FALSE, warning=FALSE} -->
+
+<!-- PLOT <- ggplot(STATEWIDE_VALUES, aes(Date)) -->
+<!-- PLOT  + geom_line(aes(y = AVG_7_CHANGE_DEATHS_percent), color = "red") +  -->
+<!--   geom_line(aes(y = AVG_7_CHANGE_HOSP_percent), color = "blue") + -->
+<!--   geom_line(aes(y = AVG_7_CHANGE_POS_percent), color = "black") +  -->
+<!--   scale_x_date(limits = Date_lims) + -->
+<!--   labs(y = "", title  = "7-day AVG of Cases, Hosp., and Deaths")  -->
+
+<!-- ``` -->
+
+
+
+
+
+
+### Since Beginning of Pandemic
+
+```{r NEW_CASES_STATE_ALL, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + 
+  geom_point(aes(y = CHANGE_POS),color = "red", fill = "red") +  
+  geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue") + 
+  #scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Cases", subtitle =  "7-day AVG in black, today's value in blue") 
+
+```
+
+&nbsp;
+
+
+```{r NEW_HOSP_STATE_ALL, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_HOSP), color = "black") + 
+  geom_point(aes(y = CHANGE_HOSP),color = "red", fill = "red") +  
+  geom_point(aes(y = MAX_HOSP), fill = "blue" ,color = "blue")  + 
+  #scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Hospitalizations" , subtitle =  "7-day AVG in black, today's value in blue") 
+
+```
+
+&nbsp;
+
+
+
+```{r NEW_DEATHS_STATE_ALL, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(STATEWIDE_VALUES, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + 
+  geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  
+  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + 
+  #scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Deaths", subtitle =  "7-day AVG in black, today's value in blue") 
+
+```
+
+
+
+
+
 ## Regions 
-[See WI DHS for Region Definitions](https://www.dhs.wisconsin.gov/aboutdhs/regions.htm)
 
 ```{r NEW_AVG_REGION, echo=FALSE, warning=FALSE}
 
-REGION_AVG_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_POS))
-REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)") 
+PLOT <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = REGION, group = REGION)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Cases (7-day trailing average)") 
 ```
 
 
@@ -32,8 +167,20 @@ REGION_AVG_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + la
 
 ```{r NEW_TOTAL_REGION, echo=FALSE, warning=FALSE}
 
-REGION_NEW_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(fill = REGION, x = Date, y = CHANGE_POS))
-REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + labs(y = "", title  = "New Daily Covid-19 Cases") 
+PLOT <- ggplot(REGION_VALUES, aes(fill = REGION, x = Date, y = CHANGE_POS))
+PLOT + geom_bar(position = "stack", stat = "identity") + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Cases") 
+```
+
+&nbsp;
+
+```{r REGION_PERCENT, echo=FALSE, warning=FALSE}
+PLOT <- ggplot(REGION_VALUES, aes(Date, AVG_7_PERCENT_POS))
+PLOT + geom_line(aes(color = REGION, group = REGION)) + 
+    scale_x_date(limits = Date_lims) +
+  labs(y = "", title = "Prop. Positive Tests (7-day trailing average)") + ylim(0,.45)
+
 ```
 
 
@@ -41,11 +188,35 @@ REGION_NEW_VALUES_POSITIVE + geom_bar(position = "stack", stat = "identity") + l
 
 
 
+
+```{r NEW_AVG_HOSP_REGION, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_HOSP))
+PLOT + geom_line(aes(color = REGION, group = REGION)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Hospitalizations (7-day trailing average)") 
+```
+
+&nbsp;
+
+
+```{r NEW_AVG_DEATHS_REGION, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_DEATHS))
+PLOT + geom_line(aes(color = REGION, group = REGION)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New Covid-19 Deaths (7-day trailing average)") 
+```
+
+&nbsp;
+
+
+
 ```{r REGION_TOTAL, echo=FALSE, warning=FALSE}
-
-
-REGION_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
-REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_y_log10() + labs(y = "", title  = "Total Covid-19 Cases (Log Scale)")
+#require(scales)
+PLOT <- ggplot(REGION_VALUES, aes(Date, POSITIVE))
+PLOT + geom_line(aes(color = REGION, group = REGION)) +
+  scale_y_log10(labels = scales::comma) + labs(y = "", title  = "Total Covid-19 Cases (Log Scale)")
 ```
 
 
@@ -53,25 +224,17 @@ REGION_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + scale_
 
 
 ```{r REGION_PER, echo=FALSE, warning=FALSE}
-REGION_POSITIVE_PER_THOUS <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
+PLOT <- ggplot(REGION_VALUES, aes(Date, REGION_POSITIVE_PER_THOUS))
 
-REGION_POSITIVE_PER_THOUS + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Total Covid-19 Cases per 1000 People")
+PLOT + geom_line(aes(color = REGION, group = REGION)) +  labs(y = "", title = "Total Covid-19 Cases per 1000 People")
 ```
 
 
 
-&nbsp;
-
-
-```{r REGION_PERCENT, echo=FALSE, warning=FALSE}
-REGION_PERCENT_POSITIVE <- ggplot(REGION_VALUES, aes(Date, AVG_7_PERCENT_POS))
-REGION_PERCENT_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title = "Prop. Positive Tests (7-day trailing average)") + ylim(0,.45)
-
-```
 
 
 
-&nbsp;
+
 
 
 
@@ -80,18 +243,36 @@ REGION_PERCENT_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(
 
 ```{r NEW_AVG_COUNTY, echo=FALSE, warning=FALSE}
 
-COUNTY_AVG_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(x = Date, y = AVG_7_CHANGE_POS))
-COUNTY_AVG_VALUES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
 
+
+<!-- &nbsp; -->
+
+
+<!-- ```{r Largest_Counties_PERCENT, echo=FALSE, warning=FALSE} -->
+<!-- PLOT <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, AVG_7_PERCENT_POS)) -->
+<!-- PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) +  -->
+<!--   scale_x_date(limits = Date_lims) + -->
+<!--   labs(y = "", title = "Prop. Positive Tests (7-day trailing average)") + ylim(0,.45) -->
+
+<!-- ``` -->
+
+
+
+
+&nbsp;
 
 
 
 ```{r Largest_Counties_TOTAL, echo=FALSE, warning=FALSE}
 
 
-TOP_6_COUNTIES_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, POSITIVE))
-TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "Total Covid-19 Cases (Log Scale)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, POSITIVE))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + scale_y_log10() + labs(y = "", title  = "Total Covid-19 Cases (Log Scale)")
 ```
 
 
@@ -99,38 +280,33 @@ TOP_6_COUNTIES_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + scale
 
 
 ```{r Largest_Counties_PER, echo=FALSE, warning=FALSE}
-TOP_6_COUNTIES_POSITIVE_PER_THOUS <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, COUNTY_POSITIVE_PER_THOUS))
-
-TOP_6_COUNTIES_POSITIVE_PER_THOUS + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "Total Covid-19 Cases per 1000 People")
-```
-
-&nbsp;
-
-
-```{r Largest_Counties_PERCENT, echo=FALSE, warning=FALSE}
-TOP_6_COUNTIES_PERCENT_POSITIVE <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, AVG_7_PERCENT_POS))
-TOP_6_COUNTIES_PERCENT_POSITIVE + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title = "Prop. Positive Tests (7-day trailing average)") + ylim(0,.45)
-
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_COUNTIES, aes(Date, COUNTY_POSITIVE_PER_THOUS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) +  labs(y = "", title = "Total Covid-19 Cases per 1000 People")
 ```
 
 
-## New Positive Cases in Select Counties
+
+## Select Counties
 
 ```{r NEW_TOTAL_SELECT, echo=FALSE, warning=FALSE}
 
-SELECT_COUNTY_NEW_VALUES_POSITIVE <- ggplot(COUNTY_VALUES_SELECT, aes(Date))
-SELECT_COUNTY_NEW_VALUES_POSITIVE  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_point(aes(y = CHANGE_POS), fill = "red" ,color = "red") + geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue") + facet_wrap(~ COUNTY, ncol = 2, scales = "free")   +  labs(y = "", title  = "Daily CTY Cases (7-day AVG in black, today's value in blue)") 
+PLOT <- ggplot(COUNTY_VALUES_SELECT, aes(Date))
+PLOT  + geom_line(aes(y = AVG_7_CHANGE_POS), color = "black") + geom_point(aes(y = CHANGE_POS), fill = "red" ,color = "red") + geom_point(aes(y = MAX_POS), fill = "blue" ,color = "blue") + 
+  scale_x_date(limits = Date_lims) +
+  facet_wrap(~ COUNTY, ncol = 2, scales = "free")   +  labs(y = "", title  = "New Covid-19 Cases (7-day AVG in black, today's value in blue)") 
 
 ```
 
-## Avg. New Pos. Cases in Most Pop. Counties by Region
+## Most Pop. Counties by Region
 
 ### North
 
 ```{r NEW_AVG_COUNTY_NORTH, echo=FALSE, warning=FALSE}
 
-COUNTY_AVG_VALUES_POSITIVE_NORTH <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "N"),], aes(x = Date, y = AVG_7_CHANGE_POS))
-COUNTY_AVG_VALUES_POSITIVE_NORTH + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "N"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
 
 
@@ -138,8 +314,10 @@ COUNTY_AVG_VALUES_POSITIVE_NORTH + geom_line(aes(color = COUNTY, group = COUNTY)
 
 ```{r NEW_AVG_COUNTY_NORTHEAST, echo=FALSE, warning=FALSE}
 
-COUNTY_AVG_VALUES_POSITIVE_NORTHEAST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "NE"),], aes(x = Date, y = AVG_7_CHANGE_POS))
-COUNTY_AVG_VALUES_POSITIVE_NORTHEAST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "NE"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
 
 
@@ -147,8 +325,10 @@ COUNTY_AVG_VALUES_POSITIVE_NORTHEAST + geom_line(aes(color = COUNTY, group = COU
 
 ```{r NEW_AVG_COUNTY_SOUTH, echo=FALSE, warning=FALSE}
 
-COUNTY_AVG_VALUES_POSITIVE_SOUTH <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "S"),], aes(x = Date, y = AVG_7_CHANGE_POS))
-COUNTY_AVG_VALUES_POSITIVE_SOUTH + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "S"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
 
 ### Southeast
@@ -156,49 +336,21 @@ COUNTY_AVG_VALUES_POSITIVE_SOUTH + geom_line(aes(color = COUNTY, group = COUNTY)
 
 ```{r NEW_AVG_COUNTY_SOUTHEAST, echo=FALSE, warning=FALSE}
 
-COUNTY_AVG_VALUES_POSITIVE_SOUTHEAST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "SE"),], aes(x = Date, y = AVG_7_CHANGE_POS))
-COUNTY_AVG_VALUES_POSITIVE_SOUTHEAST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "SE"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
 
 ### West
 
 ```{r NEW_AVG_COUNTY_WEST, echo=FALSE, warning=FALSE}
 
-COUNTY_AVG_VALUES_POSITIVE_WEST <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "W"),], aes(x = Date, y = AVG_7_CHANGE_POS))
-COUNTY_AVG_VALUES_POSITIVE_WEST + geom_line(aes(color = COUNTY, group = COUNTY)) + labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
+PLOT <- ggplot(COUNTY_VALUES_TOP_6_EACH_REGION[which(COUNTY_VALUES_TOP_6_EACH_REGION$REGION == "W"),], aes(x = Date, y = AVG_7_CHANGE_POS))
+PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) + 
+  scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Cases (7-day trailing average)")
 ```
-
-## New Hospitalizations
-
-
-```{r NEW_HOSP_STATE, echo=FALSE, warning=FALSE}
-
-STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
-STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_HOSP), color = "black") + geom_point(aes(y = CHANGE_HOSP),color = "red", fill = "red") +  geom_point(aes(y = MAX_HOSP), fill = "blue" ,color = "blue") + labs(y = "", title  = "New WI Covid-19 Hospitalizations (7-day AVG in black, today's value in blue)") 
-
-```
-
-
-
-
-```{r NEW_AVG_HOSP_REGION, echo=FALSE, warning=FALSE}
-
-REGION_AVG_HOSP_VALUES_POSITIVE <- ggplot(REGION_VALUES, aes(x = Date, y = AVG_7_CHANGE_HOSP))
-REGION_AVG_HOSP_VALUES_POSITIVE + geom_line(aes(color = REGION, group = REGION)) + labs(y = "", title  = "New Covid-19 Hospitalizations (7-day trailing average)") 
-```
-
-## New Deaths
-
-```{r NEW_DEATHS_STATE, echo=FALSE, warning=FALSE}
-
-STATEWIDE_NEW_DEATHS <- ggplot(STATEWIDE_VALUES, aes(Date))
-STATEWIDE_NEW_DEATHS  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") + geom_point(aes(y = CHANGE_DEATHS),color = "red", fill = "red") +  geom_point(aes(y = MAX_DEATHS), fill = "blue" ,color = "blue") + labs(y = "", title  = "Daily WI Covid-19 Deaths (7-day AVG in black, today's value in blue)") 
-
-```
-
-
-
-
 
 
 
