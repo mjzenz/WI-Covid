@@ -10,6 +10,8 @@ library(purrr)
 library(lubridate)
 library(zoo)
 
+#MIN_DATE_INTERVAL <- -3
+
 #READS IN DATA FROM WI DHHS API
 #County Filter Stopped Working, so removed it.
 #DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson?where=GEO%20%3D%20'County'")
