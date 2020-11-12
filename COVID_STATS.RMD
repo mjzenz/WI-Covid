@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r process, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
 MIN_DATE_INTERVAL <- -3
 source("WI_COVID_DATA_PROCESS.R")
-Date_lims <- as.Date(c(MAX_DATE %m+% months(MIN_DATE_INTERVAL), MAX_DATE),  "%Y-%m-%d")
+Date_lims <- as.Date(c(MAX_DATE %m+% months(MIN_DATE_INTERVAL), MAX_DATE + 1),  "%Y-%m-%d")
 
 ```
 
@@ -68,9 +68,9 @@ PLOT  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") +
 
 &nbsp;
 
-* **NEW HOSPITALIZATIONS** are doubling every `r round(Hosp_Doubling, 0)` days.
+* **NEW HOSPITALIZATIONS** are doubling every `r round(Hosp_Doubling, 0)` days (r^2^ = `r round(summary(Hosp_lm)$r.squared, 2)`).
 
-* **NEW DEATHS** are doubling every `r round(Death_Doubling, 0)` days.  
+* **NEW DEATHS** are doubling every `r round(Death_Doubling, 0)` days (r^2^ = `r round(summary(Deaths_lm)$r.squared, 2)`).  
 
 
 ```{r NEW_DEATHS_STATE_LOG, echo=FALSE, warning=FALSE}
