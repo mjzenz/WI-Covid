@@ -10,7 +10,7 @@ library(purrr)
 library(lubridate)
 library(zoo)
 
-#MIN_DATE_INTERVAL <- -3
+MIN_DATE_INTERVAL <- -3
 
 #READS IN DATA FROM WI DHHS API
 #County Filter Stopped Working, so removed it.
@@ -240,7 +240,9 @@ STATEWIDE_VALUES_VALID <- STATEWIDE_VALUES_VALID %>%
 
 MAX_DAY_COUNT <- STATEWIDE_VALUES_VALID[which(STATEWIDE_VALUES_VALID$Date == MAX_DATE),]$day_count
 
-lm_DATE_MIN <- MAX_DATE - 50
+ #lm_DATE_MIN <- MAX_DATE - 50
+lm_DATE_MIN <- date("2020-09-15") 
+
 
 Deaths_lm <- lm(log_CHANGE_DEATHS ~ Date, STATEWIDE_VALUES_VALID, subset = (Date >= lm_DATE_MIN))
 
