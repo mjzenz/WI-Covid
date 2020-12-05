@@ -229,29 +229,40 @@ STATEWIDE_VALUES[which(STATEWIDE_VALUES$Date == MAX_DATE),]$MAX_DEATHS  <- STATE
 
 ### Log curve fit
 
-STATEWIDE_VALUES_VALID <- STATEWIDE_VALUES[which(!(STATEWIDE_VALUES$CHANGE_DEATHS < 0 | STATEWIDE_VALUES$CHANGE_HOSP < 0)),]
+STATEWIDE_VALUES_SMOOTH <- STATEWIDE_VALUES[which(!(STATEWIDE_VALUES$CHANGE_DEATHS < 0 
+                                                    | STATEWIDE_VALUES$CHANGE_HOSP < 0)),]
+
+DAY_GROUPS_A <-2:5
+DAY_GROUPS_B <- c(6,7,1)
+STATEWIDE_VALUES_SMOOTH <-  mutate(STATEWIDE_VALUES_SMOOTH, day_count = row_number())
+
+MAX_DAY_COUNT <- STATEWIDE_VALUES_SMOOTH[which(STATEWIDE_VALUES_SMOOTH$Date == MAX_DATE),]$day_count
+
+STATEWIDE_VALUES_SMOOTH <- STATEWIDE_VALUES_SMOOTH %>%
+                    mutate(., year_count = year(Date),
+                           week_count = week(Date),
+                           day_of_week_count = if_else(wday(Date) %in% DAY_GROUPS_A, 1, 2)) %>%
+                          group_by(year_count, week_count, day_of_week_count) %>%
+                          summarize(mean_CHANGE_DEATHS = mean(CHANGE_DEATHS),
+                                    mean_CHANGE_HOSP = mean(CHANGE_HOSP),
+                                    Date = max(Date)) %>%
+                    mutate(., log_CHANGE_DEATHS = if_else(mean_CHANGE_DEATHS == 0, 0, log(mean_CHANGE_DEATHS)), 
+                           log_CHANGE_HOSP = if_else(mean_CHANGE_HOSP ==0, 0,log(mean_CHANGE_HOSP)))
 
 
-STATEWIDE_VALUES_VALID <- STATEWIDE_VALUES_VALID %>%
-                    mutate(., day_count = row_number(),
-                           log_CHANGE_DEATHS = if_else(CHANGE_DEATHS == 0, 0, log(CHANGE_DEATHS)), 
-                           log_CHANGE_HOSP = if_else(CHANGE_HOSP ==0, 0,log(CHANGE_HOSP)))
-
-
-MAX_DAY_COUNT <- STATEWIDE_VALUES_VALID[which(STATEWIDE_VALUES_VALID$Date == MAX_DATE),]$day_count
 
  #lm_DATE_MIN <- MAX_DATE - 50
 lm_DATE_MIN <- date("2020-09-15") 
 
 
-Deaths_lm <- lm(log_CHANGE_DEATHS ~ Date, STATEWIDE_VALUES_VALID, subset = (Date >= lm_DATE_MIN))
+Deaths_lm <- lm(log_CHANGE_DEATHS ~ Date, STATEWIDE_VALUES_SMOOTH, subset = (Date >= lm_DATE_MIN))
 
 summary(Deaths_lm)
 
 
 Death_Doubling <- as.numeric((log(2))/ (Deaths_lm$coefficients[2]))
 
-Hosp_lm <- lm(log_CHANGE_HOSP ~ Date, STATEWIDE_VALUES_VALID, subset = (Date >= lm_DATE_MIN))
+Hosp_lm <- lm(log_CHANGE_HOSP ~ Date, STATEWIDE_VALUES_SMOOTH, subset = (Date >= lm_DATE_MIN))
 
 summary(Hosp_lm)
 

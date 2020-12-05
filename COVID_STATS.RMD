@@ -72,14 +72,16 @@ PLOT  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") +
 
 * **NEW DEATHS** are doubling every `r round(Death_Doubling, 0)` days (r^2^ = `r round(summary(Deaths_lm)$r.squared, 2)`).  
 
+Model is fit to mean hospitalizations and deaths for Monday-Thursday and Friday-Sunday periods to reduce variability due to day of the week.
+
 
 ```{r NEW_DEATHS_STATE_LOG, echo=FALSE, warning=FALSE}
 
-PLOT <- ggplot(STATEWIDE_VALUES_VALID, aes(x = Date))
-PLOT  + geom_point(aes(y = CHANGE_DEATHS), color = "red", fill = "red") +  
-  stat_smooth(aes(y = CHANGE_DEATHS), method = "lm",formula = y~x,  col = "red") +
- geom_point(aes(y = CHANGE_HOSP), color = "blue", fill = "blue") +  
-  stat_smooth(aes(y = CHANGE_HOSP), method = "lm",formula = y~x, col = "blue") +
+PLOT <- ggplot(STATEWIDE_VALUES_SMOOTH, aes(x = Date))
+PLOT  + geom_point(aes(y = mean_CHANGE_DEATHS), color = "red", fill = "red") +  
+  stat_smooth(aes(y = mean_CHANGE_DEATHS), method = "lm",formula = y~x,  col = "red") +
+ geom_point(aes(y = mean_CHANGE_HOSP), color = "blue", fill = "blue") +  
+  stat_smooth(aes(y = mean_CHANGE_HOSP), method = "lm",formula = y~x, col = "blue") +
   scale_y_log10()+
   scale_x_date(limits = date(c(lm_DATE_MIN, MAX_DATE))) +
   labs(y = "New Hosp./Deaths", title  = "Exponential Growth in New Hospitalizations and Deaths", subtitle =  "Hosp. in blue, deaths in red, line slope represents exponential growth rate") 
