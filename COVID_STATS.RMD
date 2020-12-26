@@ -68,9 +68,9 @@ PLOT  + geom_line(aes(y = AVG_7_CHANGE_DEATHS), color = "black") +
 
 &nbsp;
 
-* **NEW HOSPITALIZATIONS** are doubling every `r round(Hosp_Doubling, 0)` days (r^2^ = `r round(summary(Hosp_lm)$r.squared, 2)`).
+<!-- * **NEW HOSPITALIZATIONS** are doubling every `r round(Hosp_Doubling, 0)` days (r^2^ = `r round(summary(Hosp_lm)$r.squared, 2)`). -->
 
-* **NEW DEATHS** are doubling every `r round(Death_Doubling, 0)` days (r^2^ = `r round(summary(Deaths_lm)$r.squared, 2)`).  
+<!-- * **NEW DEATHS** are doubling every `r round(Death_Doubling, 0)` days (r^2^ = `r round(summary(Deaths_lm)$r.squared, 2)`). --> 
 
 Model is fit to mean hospitalizations and deaths for Monday-Thursday and Friday-Sunday periods to reduce variability due to day of the week.
 
