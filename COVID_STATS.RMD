@@ -177,17 +177,6 @@ PLOT + geom_bar(position = "stack", stat = "identity") +
 
 &nbsp;
 
-```{r REGION_PERCENT, echo=FALSE, warning=FALSE}
-PLOT <- ggplot(REGION_VALUES, aes(Date, AVG_7_PERCENT_POS))
-PLOT + geom_line(aes(color = REGION, group = REGION)) + 
-    scale_x_date(limits = Date_lims) +
-  labs(y = "", title = "Prop. Positive Tests (7-day trailing average)") + ylim(0,.45)
-
-```
-
-
-&nbsp;
-
 
 
 
