@@ -12,6 +12,16 @@ library(zoo)
 
 MIN_DATE_INTERVAL <- -3
 
+Pres_Election_WI <- read.csv("~/Documents/WI-Covid/Pres_Election_Vote.csv")
+Pres_Election_WI <- Pres_Election_WI %>%
+                    rename(COUNTY = County) %>%
+                    mutate(., COUNTY = str_trim(as.character(COUNTY), side = "right"),
+                           Total = as.numeric(Total),
+                           DEM = as.numeric(DEM),
+                           REP = as.numeric(REP)) %>%
+                    mutate(., Pres_Winner = ifelse(DEM > REP, "Biden", "Trump"))
+
+
 #READS IN DATA FROM WI DHHS API
 #County Filter Stopped Working, so removed it.
 #DATA.REQUEST  <- httr::GET("https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.geojson?where=GEO%20%3D%20'County'")
@@ -35,7 +45,6 @@ MAX_DATE <- max(WI_COVID_DATA$Date)
 #ELIMINATE NON-COUNTY DATA
 WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$GEO == "County"),]
 
-
 #ELIMINATE OLDER DATA
 #WI_COVID_DATA <- WI_COVID_DATA[which(WI_COVID_DATA$Date > Sys.Date() %m+% months(-3)),]
 if(length(WI_COVID_DATA[which(WI_COVID_DATA$POSITIVE == -999),]$NEGATIVE)>0){WI_COVID_DATA[which(WI_COVID_DATA$NEGATIVE == -999),]$NEGATIVE <- 0}
@@ -48,7 +57,7 @@ WI_COVID_DATA <- WI_COVID_DATA[which(!(WI_COVID_DATA$Date == "2020-10-17")),]
 
 print("Subset to last three months")
 
-WI_COVID_AGE  <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME", "POS_0_9", "POS_10_19","POS_20_29", "POS_30_39", "POS_40_49", "POS_50_59", "POS_60_69", "POS_70_79", "POS_80_89", "POS_90" , "Date")]
+WI_COVID_AGE  <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME", "POS_0_9", "POS_10_19","POS_20_29", "POS_30_39", "POS_40_49", "POS_50_59", "POS_60_69", "POS_70_79", "POS_80_89", "POS_90" , "Date", "Pres_Winner")]
 #WI_COVID_HOSP  <- WI_COVID_DATA[,c("OBJECTID","GEOID","GEO","NAME", "HOSP_YES", "HOSP_NO", "HOSP_UNK", "Date")]
 
 #This uses min_negative and min_positive but returns -999 for NA values
@@ -109,7 +118,7 @@ COUNTY_VALUES <- COUNTY_VALUES %>%
                        AVG_7_CHANGE_POS = rollmean(CHANGE_POS, k = 7, fill = NA, align = "right"),
                        AVG_7_CHANGE_HOSP = rollmean(CHANGE_HOSP, k = 7, fill = NA, align = "right"))
 
-
+COUNTY_VALUES <- merge(x = COUNTY_VALUES, y = Pres_Election_WI, by = "COUNTY", all.x = TRUE)
 
 COUNTY_VALUES_TOP_6_COUNTIES <- COUNTY_VALUES[which(COUNTY_VALUES$COUNTY %in% TOP_6_POP_COUNTIES),]
 
@@ -271,3 +280,42 @@ summary(Hosp_lm)
 
 
 Hosp_Doubling <- as.numeric((log(2))/ (Hosp_lm$coefficients[2]))
+
+
+# Cases and Deaths by Pres Election Result
+
+Pop_By_Election <- WI_POP %>%
+                  left_join(x =., y = Pres_Election_WI, by = "COUNTY") %>%
+                  group_by(Pres_Winner) %>%
+                  summarize(Pres_Counties_Pop = sum(POPULATION))
+
+BY_PRES_ELECTION_WEEK <- COUNTY_VALUES %>%
+              mutate(week = week(Date),
+                     month = month(Date),
+                     year = year(Date)) %>%
+              group_by(year, week) %>%
+              mutate(min_week_date  = min(Date)) %>%
+              group_by(year,month) %>%
+              mutate(min_month_date = min(Date)) %>%
+              group_by(Pres_Winner, min_week_date) %>%
+              summarize(CHANGE_DEATHS = sum(CHANGE_DEATHS)) %>%
+              inner_join(., y = Pop_By_Election, by = "Pres_Winner") %>%
+              ungroup() %>%
+              mutate(CHANGE_DEATHS_PER_THOUSAND = CHANGE_DEATHS / (Pres_Counties_Pop / 1000))
+
+
+BY_PRES_ELECTION_MONTH <- COUNTY_VALUES %>%
+  mutate(week = week(Date),
+         month = month(Date),
+         year = year(Date)) %>%
+  group_by(year, week) %>%
+  mutate(min_week_date  = min(Date)) %>%
+  group_by(year,month) %>%
+  mutate(min_month_date = min(Date)) %>%
+  group_by(Pres_Winner, min_month_date) %>%
+  summarize(CHANGE_DEATHS = sum(CHANGE_DEATHS)) %>%
+  inner_join(., y = Pop_By_Election, by = "Pres_Winner") %>%
+  ungroup() %>%
+  mutate(CHANGE_DEATHS_PER_THOUSAND = CHANGE_DEATHS / (Pres_Counties_Pop / 1000))
+
+

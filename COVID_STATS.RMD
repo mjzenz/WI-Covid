@@ -344,6 +344,19 @@ PLOT + geom_line(aes(color = COUNTY, group = COUNTY)) +
 ```
 
 
+## By Presidential Election Result
+
+
+
+
+```{r DEATHS_BY_PRESIDENTIAL, echo=FALSE, warning=FALSE}
+
+PLOT <- ggplot(BY_PRES_ELECTION_MONTH, aes(x = min_month_date, y = CHANGE_DEATHS_PER_THOUSAND))
+PLOT + geom_bar(aes(fill = Pres_Winner, group = Pres_Winner), position = "dodge", stat = "identity") + 
+  #scale_x_date(limits = Date_lims) +
+  labs(y = "", title  = "New  Covid-19 Deaths/1000 people")
+```
+
 
 # {-}
 By Michael J Zenz
